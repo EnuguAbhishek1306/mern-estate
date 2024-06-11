@@ -1,22 +1,81 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import React from "react"
+import { useState } from "react"
+import { Link ,useNavigate} from "react-router-dom"
 const Signup = () => {
-  return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl text-center font-semibold my-7 mx-4'>Sign Up</h1>
-      <form action="" method="post" className='flex flex-col gap-4 '>
-      <input type="text" className='border p-3 rounded ' id='username' placeholder='username' />
-      <input type="text" className='border p-3 rounded ' id='email' placeholder='email' />
-      <input type="text" className='border p-3 rounded ' id='password' placeholder='password' />
-      <button className='bg-slate-700 text-white p-3 rounded  '>SIGN UP</button>
+  const navigate=useNavigate()
+  const [formData, setFormData] = useState({})
+  const [loading, SetLoading] = useState(false)
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    })
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      SetLoading(true)
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+      const data = await res.json()
+      console.log(data)
+      if (data.success === false) {
+        SetLoading(false)
+        
+        return;
+      }
+      SetLoading(false)
+      navigate('/signin')
+    } catch (error) {
+      SetLoading(false)
+        
       
+    }
+  }
+  return (
+    <div className="p-3 max-w-lg mx-auto">
+      <h1 className="text-3xl text-center font-semibold my-7 mx-4">Sign Up</h1>
+      <form className="flex flex-col gap-4 " onSubmit={handleSubmit}>
+        <input
+          type="text"
+          className="border p-3 rounded "
+          onChange={handleChange}
+          id="username"
+          placeholder="username"
+        />
+        <input
+          type="text"
+          className="border p-3 rounded "
+          onChange={handleChange}
+          id="email"
+          placeholder="email"
+        />
+        <input
+          type="text"
+          className="border p-3 rounded "
+          onChange={handleChange}
+          id="password"
+          placeholder="password"
+        />
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 rounded  "
+        >
+          {loading ? "Loading ..." : "SIGN UP"}
+        </button>
       </form>
-      <div className='flex gap-2 mt-5'>
+      <div className="flex gap-2 mt-5">
         <p>Have an account ?</p>
-        <Link><span className='text-blue-800'>Sign In</span></Link>
+        <Link to={'/signin'}>
+          <span className="text-blue-800">Sign In</span>
+        </Link>
       </div>
     </div>
-    
   )
 }
 
